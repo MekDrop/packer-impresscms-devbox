@@ -1,0 +1,4 @@
+{
+  "name": "{{user `atlas_username`}}/{{user `atlas_name`}}",
+  "vcs": true
+}

@@ -1,0 +1,20 @@
+{
+  "name": "automake",
+  "version": "0.0.1",
+  "description": "Tool that tries automaticcaly update box",
+  "main": "index.js",
+  "author": "ImpressCMS",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "ftp": "^0.3.10",
+    "node-version-compare": "^1.0.1"
+  },
+  "extra": {
+    "image_ftp": "ftp://ftp.arnes.si/mirrors/ubuntu-cdimage",
+    "variables": {
+      "atlas_username": "ImpressCMS",
+      "atlas_name": "DevBox-Ubuntu",
+      "box_name": "ImpressCMS.DevBox"
+    }
+  }
+}

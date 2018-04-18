@@ -1,56 +1,467 @@
-{  
-   "variables":{  
-      "atlas_username":"ImpressCMS",
-      "atlas_name":"DevBox-Ubuntu",
-      "box_name":"ImpressCMS.DevBox",
-      "box_version":"0.1.1"
-   },
-   "push":{  
-      "name":"{{user `atlas_username`}}/{{user `atlas_name`}}",
-      "vcs":true
-   },
-   "provisioners":[  
-      {  
-         "type":"file",
-         "source":"./data",
-         "destination":"/tmp"
-      },
-      {  
-         "type":"shell",
-         "scripts":[  
-            "./scripts/base.sh",
-            "./scripts/fix-data-lines.sh",
-            "./scripts/vagrant.sh",
-            "./scripts/provider/virtualbox.sh",
-            "./scripts/provider/vmware.sh",
-            "./scripts/provider/qemu.sh",
-            "./scripts/dep.sh",
-            "./scripts/setup-www.sh",
-            "./scripts/cleanup.sh",
-            "./scripts/zerodisk.sh"
-         ],
-         "override":{  
-            "virtualbox-iso":{  
-               "execute_command":"echo 'vagrant'|sudo -S bash '{{.Path}}'"
-            }
-         }
+{
+  "variables": {
+    "atlas_username": "ImpressCMS",
+    "atlas_name": "DevBox-Ubuntu",
+    "box_name": "ImpressCMS.DevBox",
+    "box_version": "17.10.1"
+  },
+  "push": {
+    "name": "{{user `atlas_username`}}/{{user `atlas_name`}}",
+    "vcs": true
+  },
+  "provisioners": [
+    {
+      "inline": [
+        "mkdir -p /srv/backup",
+        "mkdir -p /srv/backup/www",
+        "mkdir -p /srv/backup/sql",
+        "mkdir -p /tmp/data"
+      ],
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
       }
-   ],
-   "builders":[  
-      {  
-         "type":"virtualbox-iso",
-         "boot_command":[  
-		"<enter><wait>",
-		"<f6><esc>",
-		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-		"<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-		"<bs><bs><bs>",
+    },
+    {
+      "script": "./setup-actions/01-network-interfaces/preinstall.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/60-mongo/sources.list",
+      "destination": "/etc/apt/sources.list.d/mongo.list",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/60-mongo/preinstall.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/80-blackfire/sources.list",
+      "destination": "/etc/apt/sources.list.d/blackfire.list",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/80-blackfire/preinstall.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/90-impresscms/bin/icms-extract-backup.sh",
+      "destination": "/usr/local/bin/icms-extract-backup.sh",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "inline": [
+        "chown vagrant:vagrant /usr/local/bin/icms-extract-backup.sh",
+        "chmod +x /usr/local/bin/icms-extract-backup.sh"
+      ],
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/90-impresscms/services/icms.service",
+      "destination": "/etc/systemd/system/icms.service",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/90-impresscms/sql/icms.sql",
+      "destination": "/srv/backup/sql/icms.sql",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "inline": [
+        "apt-get update -q -y",
+        "apt-get upgrade -q -y",
+        "apt-get dist-upgrade -q -y"
+      ],
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/01-grub/etc",
+      "destination": "/etc",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/01-message-of-the-day/etc",
+      "destination": "/etc",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/01-sudoers/etc",
+      "destination": "/etc",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/01-tweak-dns/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/01-vagrant/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/02-basetools/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/03-virtualbox/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/49-apache/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/50-lets-encrypt/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/50-php/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/60-email/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/60-mongo/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/60-mysql/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/65-memcached/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/65-sqlite/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/70-composer/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/80-blackfire/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/80-linked-www/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/80-phpunit/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/90-impresscms/data",
+      "destination": "/tmp/data/impresscms",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/90-impresscms/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "inline": [
+        "mysql -uroot -e \"create database `icms`; use `icms`; source /srv/backup/sql/icms.sql;\""
+      ],
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/90-memcached-dashboard/websites/memcached-dashboard.conf",
+      "destination": "/etc/apache2/sites-available/memcached-dashboard.conf",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/90-memcached-dashboard/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/90-phpmyadmin/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "source": "./setup-actions/90-phpmyadmin/etc",
+      "destination": "/etc",
+      "type": "file",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/98-buildtime/install.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/01-grub/postinstall.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "inline": [
+        "systemctl enable icms.service"
+      ],
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "inline": [
+        "rm -rf /tmp/data",
+        "cd /etc/apache2/sites-available/ && a2ensite *",
+        "service apache2 restart"
+      ],
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/01-network-interfaces/endinstall.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/98-fix-data-lines/endinstall.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/98-leases-cleanup/endinstall.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    },
+    {
+      "script": "./setup-actions/99-zerodisk/endinstall.sh",
+      "type": "shell",
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S bash '{{.Path}}'"
+        }
+      }
+    }
+  ],
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "<enter><wait>",
+        "<f6><esc>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "<bs><bs><bs>",
         "/install/vmlinuz",
         " auto",
         " console-setup/ask_detect=false",
@@ -71,42 +482,42 @@
         " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg",
         " -- ",
         "<enter><wait>"
-         ],
-         "headless":true,
-         "boot_wait":"5s",
-         "disk_size":20480,
-         "guest_os_type":"Ubuntu",
-         "http_directory":"http",
-         "iso_checksum":"494c03028524dff2de5c41a800674692",
-         "iso_checksum_type":"md5",
-         "iso_url":"http://releases.ubuntu.com/16.04/ubuntu-16.04-server-i386.iso",
-         "ssh_username":"vagrant",
-         "ssh_password":"vagrant",
-         "ssh_port":22,
-         "ssh_wait_timeout":"10000s",
-         "shutdown_command":"echo '/sbin/halt -h -p' > shutdown.sh; echo 'vagrant'|sudo -S bash 'shutdown.sh'",
-         "guest_additions_path":"VBoxGuestAdditions_{{.Version}}.iso",
-         "virtualbox_version_file":".vbox_version"
+      ],
+      "headless": true,
+      "boot_wait": "5s",
+      "disk_size": 20480,
+      "guest_os_type": "Ubuntu",
+      "http_directory": "http",
+      "iso_checksum": "f713724032a1b0fdbf3ebd90d2eec8d8",
+      "iso_checksum_type": "md5",
+      "iso_url": "ftp://ftp.arnes.si/mirrors/ubuntu-cdimage/17.10.1/ubuntu-17.10.1-server-i386.iso",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "echo '/sbin/halt -h -p' > shutdown.sh; echo 'vagrant'|sudo -S bash 'shutdown.sh'",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "virtualbox_version_file": ".vbox_version"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "keep_input_artifact": false
+      },
+      {
+        "type": "atlas",
+        "only": [
+          "virtualbox-iso"
+        ],
+        "artifact": "{{user `atlas_username`}}/{{user `atlas_name`}}",
+        "artifact_type": "vagrant.box",
+        "metadata": {
+          "provider": "virtualbox",
+          "version": "{{user `box_version`}}"
+        }
       }
-   ],
-   "post-processors":[  
-      [  
-         {  
-            "type":"vagrant",
-            "keep_input_artifact":false
-         },
-         {  
-            "type":"atlas",
-            "only":[  
-               "virtualbox-iso"
-            ],
-            "artifact":"{{user `atlas_username`}}/{{user `atlas_name`}}",
-            "artifact_type":"vagrant.box",
-            "metadata":{  
-               "provider":"virtualbox",
-               "version":"{{user `box_version`}}"
-            }
-         }
-      ]
-   ]
+    ]
+  ]
 }
