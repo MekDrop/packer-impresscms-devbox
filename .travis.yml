@@ -1,13 +1,22 @@
+cache:
+  directories:
+    - packer
+    - $HOME/.npm
 before_install:
-  - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-  - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
   - sudo apt-get -qq update
   - sudo apt-get install -y -q zip yarn
-  - wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
-  - unzip packer_*.zip -d packer
-  - export PATH="$PATH:/packer/packer"
+  - |
+    if [ -d "packer" ]; then
+      wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
+      unzip packer_*.zip -d packer
+    fi
+    export PATH="$PATH:/packer/packer"
   - |
     pushd tools/automake
-    yarn install
+    npm install
+    popd
+install:
+  - |
+    pushd tools/automake
     node index.js
     popd
