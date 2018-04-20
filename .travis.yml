@@ -4,7 +4,7 @@ cache:
     - $HOME/.npm
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y -q zip yarn
+  - sudo apt-get install -y -q zip
   - |
     if [ -d "packer" ]; then
       wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
