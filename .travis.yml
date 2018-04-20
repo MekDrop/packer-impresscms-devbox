@@ -10,7 +10,6 @@ addons:
       - unzip
       - virtualbox
       - build-essential
-      - linux-headers-$(uname -r)
 env:
   global:
     - PATH=$PATH:/packer/packer
