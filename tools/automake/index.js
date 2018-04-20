@@ -1,7 +1,7 @@
 const cd = process.cwd();
 process.chdir(__dirname);
 
-const getVersions = require('./data_fetchers/last_linux_version.js');
+const getVersions = require(__dirname + '/data_fetchers/last_linux_version.js');
 const os = require('os');
 const fs = require('fs');
 
@@ -9,17 +9,17 @@ const fs = require('fs');
 
     const versions = await getVersions();
 
-    var variables = require('./data_fetchers/package-extra.js').variables;
+    var variables = require(__dirname + '/data_fetchers/package-extra.js').variables;
     variables.box_version = versions[0].version;
 
     var ret = {
         variables: variables,
-        "push": require('./data/push.json'),
+        "push": require(__dirname + '/data/push.json'),
         "provisioners": require('./data_fetchers/setup_actions.js'),
         "builders": [
             {
                 "type": "virtualbox-iso",
-                "boot_command": require('./data/boot_command.json'),
+                "boot_command": require(__dirname + '/data/boot_command.json'),
                 "headless": true,
                 "boot_wait": "5s",
                 "disk_size": 20480,
@@ -37,10 +37,10 @@ const fs = require('fs');
                 "virtualbox_version_file": ".vbox_version"
             }
         ],
-        "post-processors": require('./data/post-processors.json')
+        "post-processors": require(__dirname + '/data/post-processors.json')
     };
 
-    fs.writeFile('../../templates/ubuntu.json', JSON.stringify(ret, null, 2), (err) => {
+    fs.writeFile(__dirname + '/../../templates/ubuntu.json', JSON.stringify(ret, null, 2), (err) => {
         if (err) throw err;
 
         console.log("The file was succesfully saved!");

@@ -1,6 +1,6 @@
-const FTP = require('../tools/ftp.js');
+const FTP = require(__dirname + '/../tools/ftp.js');
 const compare = require('node-version-compare');
-const url = require('./package-extra.js').image_ftp;
+const url = require(__dirname + '/package-extra.js').image_ftp;
 
 var ftp = new FTP(url);
 

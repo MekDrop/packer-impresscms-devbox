@@ -1,1 +1,1 @@
-module.exports = require('../package.json').extra;
+module.exports = require(__dirname + '/../package.json').extra;
