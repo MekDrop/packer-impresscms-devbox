@@ -1,11 +1,15 @@
 language: javascript
+node_js:
+  - "8"
 cache:
   directories:
     - packer
     - $HOME/.npm
+addons:
+  apt:
+    - zip
+    - virtualbox
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y -q zip
   - |
     if [ -d "packer" ]; then
       wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
@@ -16,8 +20,4 @@ before_install:
     pushd tools/automake
     npm install
     popd
-install:
-  - |
-    pushd tools/automake
-    node index.js
-    popd
+script: node tools/automake/index.js

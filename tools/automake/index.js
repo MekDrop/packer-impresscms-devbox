@@ -1,3 +1,6 @@
+const cd = process.cwd();
+process.chdir(__dirname);
+
 const getVersions = require('./data_fetchers/last_linux_version.js');
 const os = require('os');
 const fs = require('fs');
@@ -42,5 +45,7 @@ const fs = require('fs');
 
         console.log("The file was succesfully saved!");
     });
+
+    process.chdir(cd);
 
 })();
