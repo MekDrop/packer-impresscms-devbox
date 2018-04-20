@@ -3,7 +3,5 @@ before_install:
   - sudo apt-get install -y -q zip
   - wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
   - unzip packer_*.zip -d packer
-  - sudo mkdir -p /usr/local/
-  - sudo mv packer /usr/local/
-  - export PATH="$PATH:/usr/local/packer"
+  - export PATH="$PATH:/packer/packer"
   - packer
