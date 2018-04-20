@@ -3,6 +3,14 @@ node_js: 9
 cache:
   directories:
     - $HOME/.npm
+addons:
+  apt:
+    packages:
+      - zip
+      - unzip
+      - virtualbox
+      - build-essential
+      - linux-headers-$(uname -r)
 env:
   global:
     - PATH=$PATH:/packer/packer
