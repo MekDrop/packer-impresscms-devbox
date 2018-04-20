@@ -1,0 +1,8 @@
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y -q zip
+  - wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_386.zip
+  - unzip packer_*_linux_386.zip -d packer
+  - sudo mv packer /usr/local/
+  - export PATH="$PATH:/usr/local/packer"
+  - packer
