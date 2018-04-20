@@ -1,21 +1,16 @@
-language: node_js
 node_js:
   - "9"
 cache:
   directories:
-    - packer
     - $HOME/.npm
 addons:
   apt:
-    - zip
-    - virtualbox
+    - unzip
+env:
+  - PACKER_VERSION=1.2.2
+  - PATH=$PATH:/packer/packer
 before_install:
-  - |
-    if [ -d "packer" ]; then
-      wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
-      unzip packer_*.zip -d packer
-    fi
-    export PATH="$PATH:/packer/packer"
+  - wget https://releases.hashicorp.com/packer/$PACKER_VERSION/packer_$PACKER_VERSION_linux_amd64.zip && unzip packer_$PACKER_VERSION_linux_amd64.zip -d packer
   - |
     pushd tools/automake
     npm install
