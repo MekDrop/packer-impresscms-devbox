@@ -7,8 +7,9 @@ addons:
   apt:
     - unzip
 env:
-  - PACKER_VERSION=1.2.2
-  - PATH=$PATH:/packer/packer
+  global:
+    - PACKER_VERSION=1.2.2
+    - PATH=$PATH:/packer/packer
 before_install:
   - wget https://releases.hashicorp.com/packer/$PACKER_VERSION/packer_$PACKER_VERSION_linux_amd64.zip && unzip packer_$PACKER_VERSION_linux_amd64.zip -d packer
   - |
