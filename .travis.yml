@@ -5,7 +5,9 @@ cache:
     - $HOME/.npm
 jobs:
   include:
-    - stage: Install requirements
-      script: npm --prefix tools/automake install
-    - stage: Regenerate templates
-      script: node tools/automake/index.js
+    - stage: regenerate templates
+      scripts:
+        - cd tools/automake/
+        - npm install
+        - node index.js
+        - cd ../..
