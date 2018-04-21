@@ -1,20 +1,11 @@
 language: javascript
-node_js: 9
+image: impresscms/packer-builder
 cache:
   directories:
     - $HOME/.npm
-addons:
-  apt:
-    packages:
-      - zip
-      - unzip
-      - virtualbox
-      - build-essential
-env:
-  global:
-    - PATH=$PATH:/packer/packer
-before_install:
-  - wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip && unzip packer_*.zip -d packer
-install:
-  - npm --prefix tools/automake install
-script: node tools/automake/index.js
+jobs:
+  include:
+    - stage: Install requirements
+      script: npm --prefix tools/automake install
+    - stage: Regenerate templates
+      script: node tools/automake/index.js
