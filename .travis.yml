@@ -9,10 +9,13 @@ cache:
     - $HOME/.npm
 services:
   - docker
+env:
+  - LINUX_DISTR="$(lsb_release -c -s)"
+  - CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+  - LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT)
 addons:
   apt:
     sources:
-      - google-cloud
       - heroku
     packages:
       - linux-headers-generic
@@ -35,13 +38,20 @@ addons:
       - open-vm-tools
       - google-cloud-sdk
       - python-vm-builder-ec2
+      - virtualbox
+      - azure-cli
+      - dirmngr
+      - psmisc
 before_install:
   - |
+    echo "ENV: LINUX_DISTR = $LINUX_DISTR"
+    echo "ENV: CLOUD_SDK_REPO = $CLOUD_SDK_REPO"
+    echo "ENV: LatestVirtualBoxVersion = $LatestVirtualBoxVersion"
+  - |
     echo "Setuping custom repos"
-    # VAR SETUP
-    export LINUX_DISTR="$(lsb_release -c -s)"
-    echo "$LINUX_DISTR"
-    echo "$CLOUD_SDK_REPO"
+    # GOOGLE CLOUD
+    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
     # VIRTUALBOX
     echo "deb https://download.virtualbox.org/virtualbox/debian $LINUX_DISTR contrib" | sudo tee -a /etc/apt/sources.list.d/virtualbox.list
     curl -L https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo apt-key add -
@@ -52,14 +62,12 @@ before_install:
     sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 52E16F86FEE04B979B07E28DB02C46DF417A0893
     # UPDATE APT
     sudo apt-get update
+install:
   - |
-    sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install virtualbox
-    LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT)
     wget "http://download.virtualbox.org/virtualbox/${LatestVirtualBoxVersion}/Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack"
     sudo VBoxManage extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack
     sudo VBoxManage list extpacks
     rm -rf Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack
-  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install azure-cli dirmngr psmisc
   - |
     wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
     unzip packer_*.zip -d packer
