@@ -51,11 +51,8 @@ module.exports = class {
         return new Promise(
             function (resolve) {
                 self.ftp.list(function(err, list) {
-                    if (err) {
-                        throw err;
-                    } else {
-                        resolve(list);
-                    }
+                    //if (err) throw err;
+                    resolve(list);
                 });
             }
         );
