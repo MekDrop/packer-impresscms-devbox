@@ -4,7 +4,7 @@ cache:
   directories:
     - $HOME/.npm
 before_install:
-  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ruby-full node npm linux-headers-generic linux-headers-virtual apt-transport-https libssl-dev libffi-dev ca-certificates zip unzip build-essential software-properties-common curl wget
+  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ruby-full linux-headers-generic linux-headers-virtual apt-transport-https libssl-dev libffi-dev ca-certificates zip unzip build-essential software-properties-common curl wget
   - |
     echo "Setuping custom repos"
     # VAR SETUP
