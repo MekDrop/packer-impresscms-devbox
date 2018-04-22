@@ -29,7 +29,13 @@ before_install:
     sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 52E16F86FEE04B979B07E28DB02C46DF417A0893
     # UPDATE APT
     sudo apt-get update
-  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install virtualbox virtualbox-ext-pack
+  - |
+    sudo DEBIAN_FRONTEND=noninteractive apt-get -y install virtualbox
+    LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT)
+    wget "http://download.virtualbox.org/virtualbox/${LatestVirtualBoxVersion}/Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack"
+    sudo VBoxManage extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack
+    sudo VBoxManage list extpacks
+    rm -rf Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack
   - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install qemu qemu-kvm virt-manager virt-viewer libvirt-bin
   - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install azure-cli dirmngr psmisc
   - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install python-vm-builder-ec2
