@@ -10,6 +10,8 @@ before_install:
     # VAR SETUP
     export LINUX_DISTR="$(lsb_release -c -s)"
     export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+    echo "$LINUX_DISTR"
+    echo "$CLOUD_SDK_REPO"
     # GOOGLE CLOUD
     echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
     curl -L https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
