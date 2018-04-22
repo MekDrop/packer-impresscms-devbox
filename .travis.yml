@@ -12,12 +12,17 @@ services:
 env:
   global:
     - LINUX_DISTR="$(lsb_release -c -s)"
-    - CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
     - LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT)
 addons:
   apt:
     sources:
       - heroku
+      - sourceline: 'deb http://packages.cloud.google.com/apt cloud-sdk-trusty main'
+        key_url: 'https://packages.cloud.google.com/apt/doc/apt-key.gpg'
+      - sourceline: 'deb https://download.virtualbox.org/virtualbox/debian trusty contrib'
+        key_url: 'https://www.virtualbox.org/download/oracle_vbox.asc'
+      - sourceline: 'deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ trusty main'
+        key_url: 'https://packages.microsoft.com/keys/microsoft.asc'
     packages:
       - linux-headers-generic
       - linux-headers-virtual
@@ -43,26 +48,6 @@ addons:
       - azure-cli
       - dirmngr
       - psmisc
-before_install:
-  - |
-    echo "ENV: LINUX_DISTR = $LINUX_DISTR"
-    echo "ENV: CLOUD_SDK_REPO = $CLOUD_SDK_REPO"
-    echo "ENV: LatestVirtualBoxVersion = $LatestVirtualBoxVersion"
-  - |
-    echo "Setuping custom repos"
-    # GOOGLE CLOUD
-    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-    # VIRTUALBOX
-    echo "deb https://download.virtualbox.org/virtualbox/debian $LINUX_DISTR contrib" | sudo tee -a /etc/apt/sources.list.d/virtualbox.list
-    curl -L https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo apt-key add -
-    curl -L https://www.virtualbox.org/download/oracle_vbox.asc | sudo apt-key add -
-    # AZURE
-    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $LINUX_DISTR main" | sudo tee -a /etc/apt/sources.list.d/azure.list
-    curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-    sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 52E16F86FEE04B979B07E28DB02C46DF417A0893
-    # UPDATE APT
-    sudo apt-get update
 install:
   - |
     wget "http://download.virtualbox.org/virtualbox/${LatestVirtualBoxVersion}/Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack"
