@@ -10,9 +10,10 @@ cache:
 services:
   - docker
 env:
-  - LINUX_DISTR="$(lsb_release -c -s)"
-  - CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
-  - LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT)
+  global:
+    - LINUX_DISTR="$(lsb_release -c -s)"
+    - CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+    - LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT)
 addons:
   apt:
     sources:
