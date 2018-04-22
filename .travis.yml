@@ -20,13 +20,13 @@ before_install:
     # DOCKER
     echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu $LINUX_DISTR stable" | sudo tee -a /etc/apt/sources.list.d/docker.list
     curl -L https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    apt-key fingerprint 0EBFCD88
+    sudo apt-key fingerprint 0EBFCD88
     # AZURE
     echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $LINUX_DISTR main" | sudo tee -a /etc/apt/sources.list.d/azure.list
     curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-    apt-key adv --keyserver packages.microsoft.com --recv-keys 52E16F86FEE04B979B07E28DB02C46DF417A0893
+    sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 52E16F86FEE04B979B07E28DB02C46DF417A0893
     # UPDATE APT
-    apt-get update
+    sudo apt-get update
   - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install virtualbox virtualbox-ext-pack
   - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install qemu qemu-kvm virt-manager virt-viewer libvirt-bin
   - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install azure-cli dirmngr psmisc
