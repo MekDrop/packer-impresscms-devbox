@@ -1,24 +1,47 @@
-language: javascript
-node_js: 9
-cache:
-  directories:
-    - $HOME/.npm
 sudo: required
 dist: trusty
+language: node_js
+nvm: 9.11.1
+node_js: 9
+cache:
+  yarn: true
+  directories:
+    - $HOME/.npm
 services:
   - docker
+addons:
+  apt:
+    sources:
+      - google-cloud
+      - heroku
+    packages:
+      - linux-headers-generic
+      - linux-headers-virtual
+      - apt-transport-https
+      - libssl-dev
+      - libffi-dev
+      - ca-certificates
+      - zip
+      - unzip
+      - build-essential
+      - software-properties-common
+      - curl
+      - wget
+      - qemu
+      - qemu-kvm
+      - virt-manager
+      - virt-viewer
+      - libvirt-bin
+      - open-vm-tools
+      - google-cloud-sdk
+      - python-vm-builder-ec2
 before_install:
-  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ruby-full linux-headers-generic linux-headers-virtual apt-transport-https libssl-dev libffi-dev ca-certificates zip unzip build-essential software-properties-common curl wget
   - |
     echo "Setuping custom repos"
     # VAR SETUP
     export LINUX_DISTR="$(lsb_release -c -s)"
-    export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
     echo "$LINUX_DISTR"
     echo "$CLOUD_SDK_REPO"
-    # GOOGLE CLOUD
-    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-    curl -L https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
     # VIRTUALBOX
     echo "deb https://download.virtualbox.org/virtualbox/debian $LINUX_DISTR contrib" | sudo tee -a /etc/apt/sources.list.d/virtualbox.list
     curl -L https://www.virtualbox.org/download/oracle_vbox_2016.asc | sudo apt-key add -
@@ -36,12 +59,7 @@ before_install:
     sudo VBoxManage extpack install --replace Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack
     sudo VBoxManage list extpacks
     rm -rf Oracle_VM_VirtualBox_Extension_Pack-${LatestVirtualBoxVersion}.vbox-extpack
-  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install qemu qemu-kvm virt-manager virt-viewer libvirt-bin
   - sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install azure-cli dirmngr psmisc
-  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install python-vm-builder-ec2
-  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install open-vm-tools
-  - sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install google-cloud-sdk
-  - sudo npm install -g yarn
   - |
     wget https://releases.hashicorp.com/packer/1.2.2/packer_1.2.2_linux_amd64.zip
     unzip packer_*.zip -d packer
@@ -53,8 +71,8 @@ before_install:
 jobs:
   include:
     - stage: regenerate templates
-      scripts:
-        - cd tools/automake/
-        - npm install
-        - node index.js
-        - cd ../..
+      script: |
+        pushd tools/automake/
+        npm install
+        node index.js
+        popd
