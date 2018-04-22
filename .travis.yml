@@ -5,6 +5,7 @@ nvm: 9.11.1
 node_js: 9
 cache:
   yarn: true
+  packages: true
   directories:
     - $HOME/.npm
 services:
@@ -13,6 +14,7 @@ env:
   global:
     - LINUX_DISTR="$(lsb_release -c -s)"
     - LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT)
+    - PATH="$PATH:/usr/local/packer"
 addons:
   apt:
     sources:
@@ -59,14 +61,15 @@ install:
     unzip packer_*.zip -d packer
     rm -rf packer_*.zip
     mv packer /usr/local
-    echo 'export PATH="$PATH:/usr/local/packer"' >> /etc/environment
-    export PATH="$PATH:/usr/local/packer"
     packer version
+  - |
+    pushd tools/automake/
+    yarn install
+    popd
 jobs:
   include:
     - stage: regenerate templates
       script: |
         pushd tools/automake/
-        npm install
         node index.js
         popd
