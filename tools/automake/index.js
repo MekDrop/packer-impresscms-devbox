@@ -4,12 +4,18 @@ process.chdir(__dirname);
 const getVersions = require(__dirname + '/data_fetchers/last_linux_version.js');
 const os = require('os');
 const fs = require('fs');
+const yarg = require('yargs').argv;
+
+if (!yarg.packer_vars && !yarg.subpath && !yarg.ftp) {
+    console.error('You must specify: packer_vars and ftp vars!')
+    exit(1);
+}
 
 (async function () {
 
-    const versions = await getVersions();
+    const versions = await getVersions(yarg.ftp);
 
-    var variables = require(__dirname + '/data_fetchers/package-extra.js').variables;
+    var variables = yarg.packer_vars;
     variables.box_version = versions[0].version;
 
     var ret = {
@@ -27,7 +33,7 @@ const fs = require('fs');
                 "http_directory": "http",
                 "iso_checksum": versions[0].hash,
                 "iso_checksum_type": "md5",
-                "iso_url": versions[0].url,
+                "iso_url": versions[0].url.replace(/\/\//g, '/'),
                 "ssh_username": "vagrant",
                 "ssh_password": "vagrant",
                 "ssh_port": 22,

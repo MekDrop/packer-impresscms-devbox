@@ -1,10 +1,8 @@
 const FTP = require(__dirname + '/../tools/ftp.js');
 const compare = require('node-version-compare');
-const url = require(__dirname + '/package-extra.js').image_ftp;
 
-var ftp = new FTP(url);
-
-module.exports = async function () {
+module.exports = async function (ftp_url) {
+    var ftp = new FTP(ftp_url);
     await ftp.connect();
     var list = await ftp.list();
     var items = list.filter(
@@ -37,7 +35,7 @@ module.exports = async function () {
                         name: parts[1],
                         hash: parts[0],
                         version: items[i],
-                        url: url + '/' + items[i] + '/' + parts[1]
+                        url: ftp_url + '/' + items[i] + '/' + parts[1]
                     };
                 }
             ).filter(

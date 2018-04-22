@@ -15,6 +15,10 @@ env:
     - LINUX_DISTR="$(lsb_release -c -s)"
     - LatestVirtualBoxVersion=$(wget -qO - http://download.virtualbox.org/virtualbox/LATEST.TXT)
     - PATH="$PATH:/usr/local/packer"
+    - UBUNTU_IMAGES_FTP="ftp://ftp.litnet.lt/ubuntu-cd/"
+    - ATLAS_USERNAME="ImpressCMS"
+    - ATLAS_NAME="DevBox-Ubuntu"
+    - BOX_NAME="ImpressCMS.DevBox"
 addons:
   apt:
     sources:
@@ -69,4 +73,9 @@ install:
 jobs:
   include:
     - stage: regenerate templates
-      script: node tools/automake/index.js
+      script: |
+        node tools/automake/index.js \
+        --ftp=$UBUNTU_IMAGES_FTP \
+        --packer_vars.atlas_username=$ATLAS_USERNAME \
+        --packer_vars.atlas_name=$ATLAS_NAME \
+        --packer_vars.box_name=$BOX_NAME

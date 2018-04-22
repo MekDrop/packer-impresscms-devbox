@@ -490,7 +490,7 @@
       "http_directory": "http",
       "iso_checksum": "f713724032a1b0fdbf3ebd90d2eec8d8",
       "iso_checksum_type": "md5",
-      "iso_url": "ftp://ftp.arnes.si/mirrors/ubuntu-cdimage/17.10.1/ubuntu-17.10.1-server-i386.iso",
+      "iso_url": "ftp:/ftp.litnet.lt/ubuntu-cd/17.10.1/ubuntu-17.10.1-server-i386.iso",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
