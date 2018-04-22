@@ -1,5 +1,6 @@
 language: javascript
 node_js: 9
+sudo: true
 cache:
   directories:
     - $HOME/.npm
