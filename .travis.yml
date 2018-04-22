@@ -61,7 +61,7 @@ install:
     mv packer /usr/local
     echo 'export PATH="$PATH:/usr/local/packer"' >> /etc/environment
     export PATH="$PATH:/usr/local/packer"
-    packer
+    packer version
 jobs:
   include:
     - stage: regenerate templates
