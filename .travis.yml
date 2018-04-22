@@ -69,7 +69,4 @@ install:
 jobs:
   include:
     - stage: regenerate templates
-      script: |
-        pushd tools/automake/
-        node index.js
-        popd
+      script: node tools/automake/index.js
